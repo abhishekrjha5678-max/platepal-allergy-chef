@@ -1,0 +1,19 @@
+{
+  "name": "platepal-allergy-chef",
+  "version": "1.0.0",
+  "description": "Open-Source AI Kitchen Companion powered by Google Gemma 2",
+  "main": "index.html",
+  "scripts": {
+    "dev": "serve .",
+    "start": "serve ."
+  },
+  "keywords": [
+    "hacktoberfest",
+    "gemma2",
+    "open-source-ai",
+    "allergy-safety",
+    "food-safety"
+  ],
+  "author": "Abhishek",
+  "license": "MIT"
+}
