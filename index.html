@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlatePal | AllergySafe Chef - Open-Source AI Kitchen Companion</title>
+    <meta name="description" content="PlatePal is an open-source AI kitchen companion powered by Google Gemma 2. Built for friends and roommates with severe dietary allergies and Celiac disease to scan hidden ingredients, invent safe recipes, and prevent cross-contamination.">
+    <meta name="keywords" content="Hacktoberfest 2026, Open-Source AI, Gemma 2, Food Allergies, Celiac, Recipe Generator, Allergen Scanner">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="PlatePal: AllergySafe Chef - Open-Source AI for Food Allergies">
+    <meta property="og:description" content="Empowering friends with dietary allergies to cook and eat safely without fear of hidden triggers or cross-contact. Built with Google Gemma 2 for Hacktoberfest 2026.">
+    <meta property="og:type" content="website">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Application Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+        <div class="container nav-bar">
+            <div class="logo-wrapper">
+                <div class="logo-icon">🥗</div>
+                <div class="logo-text">
+                    <h1>PlatePal <span class="badge-tag">Gemma 2 Powered</span></h1>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="badge-model-status" id="modelStatusBadge">
+                    <span class="status-dot"></span>
+                    <span id="modelStatusText">Gemma 2 (In-Browser/Local)</span>
+                </div>
+                <button class="btn-pill" id="openSettingsBtn" title="Configure AI Provider">
+                    ⚙️ AI Settings
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-tag">
+                🎃 Hacktoberfest Weekend Challenge: Build for a Friend
+            </div>
+            <h2 class="hero-title">
+                Safe Cooking for <span class="text-gradient" id="friendHeroName">Alex</span>. <br>Zero Hidden Allergens.
+            </h2>
+            <p class="hero-desc">
+                An empathetic open-weight AI agent designed to keep your friend safe from hidden triggers, cross-contamination, and boring restrictive meals.
+            </p>
+        </section>
+
+        <!-- Friend Profile Card -->
+        <div class="friend-banner glass-panel">
+            <div class="friend-info">
+                <div class="friend-avatar">🧑‍🍳</div>
+                <div class="friend-meta">
+                    <h3>Cooking for: <span id="friendDisplayName">Alex (Roommate)</span></h3>
+                    <p id="friendSeverityText">Risk Level: High (Anaphylaxis & Celiac)</p>
+                </div>
+            </div>
+            <div class="active-allergen-tags" id="activeAllergenBadges">
+                <!-- Dynamically populated -->
+            </div>
+            <button class="btn-secondary" id="editProfileBtn">
+                ✏️ Edit Friend Profile
+            </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs-nav" role="tablist">
+            <button class="tab-btn active" data-tab="scannerTab" id="tabBtnScanner">
+                🔍 Scan & Audit Ingredients
+            </button>
+            <button class="tab-btn" data-tab="recipeTab" id="tabBtnRecipe">
+                🍲 Pantry-to-Plate Recipe Generator
+            </button>
+            <button class="tab-btn" data-tab="substituteTab" id="tabBtnSubstitute">
+                🔄 Safe Substitutions
+            </button>
+            <button class="tab-btn" data-tab="safetyGuideTab" id="tabBtnSafety">
+                🛡️ Shared Kitchen Hygiene
+            </button>
+        </div>
+
+        <!-- TAB 1: ALLERGEN SCANNER -->
+        <section class="tab-content active" id="scannerTab">
+            <div class="glass-panel" style="padding: 32px;">
+                <h3 style="margin-bottom: 8px; font-size: 1.3rem;">Ingredient Safety & Hidden Trigger Audit</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem;">
+                    Paste a recipe, food label, or ingredients list. Gemma 2 parses complex names (like maltodextrin, hydrolyzed wheat protein, casein, or facility warnings) against your friend's profile.
+                </p>
+
+                <div class="form-group">
+                    <label class="form-label" for="ingredientInput">Enter Ingredients or Recipe Text:</label>
+                    <textarea 
+                        id="ingredientInput" 
+                        class="form-control" 
+                        rows="5" 
+                        placeholder="e.g. Chicken thighs, soy sauce, malt vinegar, garlic powder, toasted sesame oil, crushed peanuts, cornstarch..."
+                    ></textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn-primary" id="runScanBtn">
+                        <span id="scanBtnIcon">⚡</span>
+                        <span id="scanBtnText">Audit with Gemma AI</span>
+                    </button>
+                    <button class="btn-secondary" id="sampleRiskBtn">
+                        ⚠️ Load Risky Sample Recipe
+                    </button>
+                    <button class="btn-secondary" id="sampleSafeBtn">
+                        ✅ Load Safe Sample Recipe
+                    </button>
+                </div>
+
+                <!-- Scan Results Container -->
+                <div id="scanResultArea" style="display: none;">
+                    <!-- Dynamically rendered via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: RECIPE GENERATOR -->
+        <section class="tab-content" id="recipeTab">
+            <div class="glass-panel" style="padding: 32px;">
+                <h3 style="margin-bottom: 8px; font-size: 1.3rem;">Pantry-to-Plate AI Chef</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem;">
+                    What's in the kitchen right now? Gemma 2 will invent a gourmet, delicious meal that is strictly certified safe for your friend's exact allergen profile.
+                </p>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label class="form-label" for="pantryInput">Pantry / Fridge Ingredients Available:</label>
+                        <input 
+                            type="text" 
+                            id="pantryInput" 
+                            class="form-control" 
+                            placeholder="e.g. Jasmine rice, chicken breast, bell pepper, carrots, coconut milk, garlic, olive oil"
+                            value="Jasmine rice, chicken breast, bell pepper, coconut milk, garlic, olive oil"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mealTypeSelect">Meal Type:</label>
+                        <select id="mealTypeSelect" class="form-control">
+                            <option value="Quick 20-Min Weeknight Dinner">Quick 20-Min Dinner</option>
+                            <option value="Comforting Weekend Lunch">Comforting Weekend Lunch</option>
+                            <option value="Energizing Breakfast">Energizing Breakfast</option>
+                            <option value="Late Night Dorm Snack">Late Night Dorm Snack</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="generateRecipeBtn">
+                    <span id="recipeBtnIcon">✨</span>
+                    <span id="recipeBtnText">Generate Safe Recipe</span>
+                </button>
+
+                <!-- Recipe Display Area -->
+                <div id="recipeResultArea" style="display: none;">
+                    <!-- Dynamically rendered -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: SAFE SUBSTITUTIONS -->
+        <section class="tab-content" id="substituteTab">
+            <div class="glass-panel" style="padding: 32px;">
+                <h3 style="margin-bottom: 8px; font-size: 1.3rem;">Smart Culinary Substitutions</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem;">
+                    Need to replace a dangerous allergen without ruining the dish? Gemma suggests 1:1 culinary substitutes that preserve texture, moisture, and umami.
+                </p>
+
+                <div style="display: flex; gap: 14px; max-width: 600px; margin-bottom: 24px;">
+                    <input 
+                        type="text" 
+                        id="subTargetInput" 
+                        class="form-control" 
+                        placeholder="e.g. Soy Sauce, Peanut Butter, Heavy Cream, Wheat Flour, Egg..."
+                        value="Soy Sauce"
+                    >
+                    <button class="btn-primary" id="findSubBtn" style="white-space: nowrap;">
+                        Find Safe Alternative
+                    </button>
+                </div>
+
+                <div id="subResultArea">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: SHARED KITCHEN SAFETY GUIDE -->
+        <section class="tab-content" id="safetyGuideTab">
+            <div class="glass-panel" style="padding: 32px;">
+                <h3 style="margin-bottom: 8px; font-size: 1.3rem;">Shared Kitchen & Roommate Cross-Contamination Protocols</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem;">
+                    When living with a friend who has Celiac disease or anaphylactic allergies, simple kitchen habits can be life-saving.
+                </p>
+
+                <div id="hygieneCardsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                    <!-- Rendered from allergen-knowledge.js -->
+                </div>
+
+                <div class="hygiene-alert-box" style="margin-top: 32px;">
+                    <div class="icon">💡</div>
+                    <div>
+                        <strong style="color: #93c5fd; display: block; margin-bottom: 4px;">Golden Rule of Cross-Contact Prevention:</strong>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                            "Sanitizing" or "heating" does not destroy food allergen proteins. Gluten and nut proteins are resilient heat-stable compounds. Physical washing with soap, warm water, and clean friction is required to remove allergen residue completely.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FRIEND PROFILE MODAL -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 style="font-size: 1.25rem;">Edit Friend's Allergen Profile</h3>
+                <button class="close-btn" id="closeProfileModal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="friendNameInput">Friend's Name:</label>
+                <input type="text" id="friendNameInput" class="form-control" value="Alex">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Allergies to strictly avoid:</label>
+                <div class="allergen-selection-grid" id="allergenCheckboxes">
+                    <!-- Checkbox items rendered via JS -->
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="severitySelect">Condition Severity:</label>
+                <select id="severitySelect" class="form-control">
+                    <option value="Severe / Anaphylaxis Risk">Severe / Anaphylaxis Risk</option>
+                    <option value="Celiac Disease (Strict Gluten Free)">Celiac Disease (Strict Gluten Free)</option>
+                    <option value="Moderate Intolerance / Digestive">Moderate Intolerance / Digestive</option>
+                </select>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                <button class="btn-secondary" id="cancelProfileBtn">Cancel</button>
+                <button class="btn-primary" id="saveProfileBtn">Save Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI SETTINGS MODAL -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 style="font-size: 1.25rem;">Open-Source AI Configuration</h3>
+                <button class="close-btn" id="closeSettingsModal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="providerSelect">AI Inference Engine:</label>
+                <select id="providerSelect" class="form-control">
+                    <option value="offline_gemma">Built-in Clinical Gemma Engine (Zero Latency / 100% Private / No Setup)</option>
+                    <option value="ollama">Local Ollama (Runs 'gemma2:2b' or 'gemma2:9b' on your PC)</option>
+                    <option value="custom_endpoint">Hugging Face / Open-Weight Gemma API Endpoint</option>
+                </select>
+            </div>
+            
+            <div id="ollamaConfigGroup" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label" for="ollamaUrlInput">Ollama Server URL:</label>
+                    <input type="text" id="ollamaUrlInput" class="form-control" value="http://localhost:11434">
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Ensure Ollama is running with OLLAMA_ORIGINS="*"</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="ollamaModelInput">Model Name:</label>
+                    <input type="text" id="ollamaModelInput" class="form-control" value="gemma2:2b">
+                </div>
+            </div>
+
+            <div id="customConfigGroup" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label" for="customEndpointInput">Model API Endpoint:</label>
+                    <input type="text" id="customEndpointInput" class="form-control" value="https://api-inference.huggingface.co/models/google/gemma-2-2b-it">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="apiKeyInput">API Token / Key:</label>
+                    <input type="password" id="apiKeyInput" class="form-control" placeholder="hf_... or open API key">
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                <button class="btn-secondary" id="testAiConnectionBtn">Test Connection</button>
+                <button class="btn-primary" id="saveAiSettingsBtn">Save Settings</button>
+            </div>
+            <div id="aiTestFeedback" style="margin-top: 14px; font-size: 0.85rem; display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer container">
+        <p>Built with ❤️ for friends everywhere • Powered by <strong>Google Gemma 2</strong> Open-Weight AI</p>
+        <p style="margin-top: 6px;">Hacktoberfest 2026 Weekend Challenge: Build for a Friend • Open Source (MIT License)</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/allergen-knowledge.js"></script>
+    <script src="js/gemma-service.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
